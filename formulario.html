@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="ISO-8859-1">
@@ -100,7 +100,7 @@
         </div>
 
         <div id="fechasContainer">
-            <!-- Los campos de fechas se agregar&aacuten dinámicamente aqu&iacute -->
+            <!-- Los campos de fechas se agregar&aacuten dinÃ¡micamente aqu&iacute -->
         </div>
 
         <div class="field-group">
@@ -121,7 +121,7 @@
             }
 
             if (cantidadDias > 0) {
-                // Creamos los campos de fecha y horarios dinámicamente
+                // Creamos los campos de fecha y horarios dinÃ¡micamente
                 for (var i = 1; i <= cantidadDias; i++) {
                     var dateGroup = document.createElement('div');
                     dateGroup.className = 'date-time-container';
@@ -179,7 +179,7 @@
                     dateGroup.appendChild(timeGroupLabel);
                     container.appendChild(dateGroup);
 
-                    // Inicialización del datepicker para el campo de fecha
+                    // InicializaciÃ³n del datepicker para el campo de fecha
                     if (typeof jQuery !== 'undefined' && typeof jQuery.ui !== 'undefined') {
                         $(document.getElementById("fecha_" + i)).datepicker({
                             dateFormat: 'dd/mm/yy',
@@ -217,7 +217,7 @@
                 });
             }
 
-            // Validación de campos y fechas duplicadas
+            // ValidaciÃ³n de campos y fechas duplicadas
             var fechasSet = new Set();
             for (var i = 0; i < fechas.length; i++) {
                 if (!fechas[i].fecha || fechas[i].horaDesde === 'Seleccionar hora...' || fechas[i].horaHasta === 'Seleccionar hora...') {
@@ -240,7 +240,7 @@
 
             var subject = "Solicitud de Reserva";
             var body = "Estimados,\n\n" +
-                       "Quisiera solicitar la reserva de la sala Ituzaingó para las siguientes fechas y horarios:\n\n" +
+                       "Quisiera solicitar la reserva de la sala ItuzaingÃ³ para las siguientes fechas y horarios:\n\n" +
                        fechasFormateadas + "\n\n" +
                        "Nombre del solicitante: " + nombreUsuario + "\n\n" +
                        "Desde ya, muchas gracias.\n\n" +
