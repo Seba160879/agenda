@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="ISO-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud de Reserva</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #80CBC4;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #formContainer {
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 2px solid #ddd;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            text-align: left;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="date"], select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        select {
+            height: 40px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;  
+            border: none;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2e7d32;
+        }
+        .field-group {
+            margin-bottom: 20px;
+        }
+        .date-time-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .date-time-container .date-group, .date-time-container .time-group {
+            flex: 1;
+        }
+        .date-time-container .date-group label, .date-time-container .time-group label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        @media (max-width: 768px) {
+            input[type="text"], input[type="date"], select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="formContainer">
+        <h2>Solicitud de Reserva Sala Ituzaingó</h2>
+        
+        <div class="field-group">
+            <label for="nombreUsuario">Nombre:</label>
+            <input type="text" id="nombreUsuario" name="nombreUsuario" placeholder="Ingrese su nombre" required>
+        </div>
+        <div class="field-group">
+            <label for="cantidadDias">Cantidad de días a reservar:</label>
+            <select id="cantidadDias" name="cantidadDias" onchange="mostrarCamposFechas()">
+                <option value="0">Seleccione cantidad de días...</option>
+                <option value="1">1 día</option>
+                <option value="2">2 días</option>
+                <option value="3">3 días</option>
+                <option value="4">4 días</option>
+                <option value="5">5 días</option>
+            </select>
+        </div>
+
+        <div id="fechasContainer">
+            <!-- Los campos de fechas se agregarán dinámicamente aquí -->
+        </div>
+
+        <div class="field-group">
+            <button onclick="enviarCorreo()">Enviar Solicitud</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        function mostrarCamposFechas() {
+            var cantidadDias = parseInt(document.getElementById('cantidadDias').value);
+            var container = document.getElementById('fechasContainer');
+
+            // Limpiamos el contenedor antes de agregar nuevos campos
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+
+            if (cantidadDias > 0) {
+                // Creamos los campos de fecha y horarios dinámicamente
+                for (var i = 1; i <= cantidadDias; i++) {
+                    var dateGroup = document.createElement('div');
+                    dateGroup.className = 'date-time-container';
+
+                    var dateGroupLabel = document.createElement('div');
+                    dateGroupLabel.className = 'date-group';
+                    var fechaLabel = document.createElement('label');
+                    fechaLabel.textContent = 'Fecha ' + i + ':';
+                    dateGroupLabel.appendChild(fechaLabel);
+                    var fechaInput = document.createElement('input');
+                    fechaInput.setAttribute('type', 'text');
+                    fechaInput.setAttribute('id', 'fecha_' + i);
+                    fechaInput.setAttribute('name', 'fecha_' + i);
+                    fechaInput.setAttribute('placeholder', 'Seleccione la fecha');
+                    dateGroupLabel.appendChild(fechaInput);
+                    dateGroup.appendChild(dateGroupLabel);
+
+                    var timeGroupLabel = document.createElement('div');
+                    timeGroupLabel.className = 'time-group';
+                    var horaDesdeLabel = document.createElement('label');
+                    horaDesdeLabel.textContent = 'Hora desde:';
+                    timeGroupLabel.appendChild(horaDesdeLabel);
+                    var horaDesdeSelect = document.createElement('select');
+                    horaDesdeSelect.setAttribute('id', 'horaDesde_' + i);
+                    horaDesdeSelect.setAttribute('name', 'horaDesde_' + i);
+                    horaDesdeSelect.setAttribute('required', 'true');
+                    var horasOptions = [
+                        'Seleccionar hora...', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+                        '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+                        '15:00', '15:30', '16:00', '16:30', '17:00'
+                    ];
+                    for (var j = 0; j < horasOptions.length; j++) {
+                        var optionDesde = document.createElement('option');
+                        optionDesde.setAttribute('value', horasOptions[j]);
+                        optionDesde.textContent = horasOptions[j];
+                        horaDesdeSelect.appendChild(optionDesde);
+                    }
+                    timeGroupLabel.appendChild(horaDesdeSelect);
+
+                    var horaHastaLabel = document.createElement('label');
+                    horaHastaLabel.textContent = 'Hora hasta:';
+                    timeGroupLabel.appendChild(horaHastaLabel);
+                    var horaHastaSelect = document.createElement('select');
+                    horaHastaSelect.setAttribute('id', 'horaHasta_' + i);
+                    horaHastaSelect.setAttribute('name', 'horaHasta_' + i);
+                    horaHastaSelect.setAttribute('required', 'true');
+                    for (var k = 0; k < horasOptions.length; k++) {
+                        var optionHasta = document.createElement('option');
+                        optionHasta.setAttribute('value', horasOptions[k]);
+                        optionHasta.textContent = horasOptions[k];
+                        horaHastaSelect.appendChild(optionHasta);
+                    }
+                    timeGroupLabel.appendChild(horaHastaSelect);
+
+                    dateGroup.appendChild(timeGroupLabel);
+                    container.appendChild(dateGroup);
+
+                    // Inicialización del datepicker para el campo de fecha
+                    if (typeof jQuery !== 'undefined' && typeof jQuery.ui !== 'undefined') {
+                        $(document.getElementById("fecha_" + i)).datepicker({
+                            dateFormat: 'dd/mm/yy',
+                            changeMonth: true,
+                            changeYear: true,
+                            minDate: 0 // Permite seleccionar solo fechas a partir de hoy
+                        });
+                    }
+                }
+            } else {
+                alert("Por favor, seleccione la cantidad de días a reservar.");
+            }
+        }
+
+        function enviarCorreo() {
+            var nombreUsuario = document.getElementById('nombreUsuario').value;
+            if (!nombreUsuario) {
+                alert("Por favor, ingrese su nombre completo.");
+                return;
+            }
+
+            var cantidadDias = parseInt(document.getElementById('cantidadDias').value);
+            var fechas = [];
+
+            // Obtenemos las fechas y horarios seleccionados por el usuario
+            for (var i = 1; i <= cantidadDias; i++) {
+                var fecha = document.getElementById('fecha_' + i).value;
+                var horaDesde = document.getElementById('horaDesde_' + i).value;
+                var horaHasta = document.getElementById('horaHasta_' + i).value;
+
+                fechas.push({
+                    fecha: fecha,
+                    horaDesde: horaDesde,
+                    horaHasta: horaHasta
+                });
+            }
+
+            // Validación de campos y fechas duplicadas
+            var fechasSet = new Set();
+            for (var i = 0; i < fechas.length; i++) {
+                if (!fechas[i].fecha || fechas[i].horaDesde === 'Seleccionar hora...' || fechas[i].horaHasta === 'Seleccionar hora...') {
+                    alert("Por favor, complete todos los campos de fecha y horarios.");
+                    return;
+                }
+
+                if (fechasSet.has(fechas[i].fecha)) {
+                    alert("Por favor, no seleccione fechas duplicadas.");
+                    return;
+                }
+
+                fechasSet.add(fechas[i].fecha);
+            }
+
+            // Formateamos las fechas para el correo
+            var fechasFormateadas = fechas.map(function(fecha, index) {
+                return "Fecha " + (index + 1) + ": " + fecha.fecha + ", Hora desde: " + fecha.horaDesde + ", Hora hasta: " + fecha.horaHasta;
+            }).join('\n\n');
+
+            var subject = "Solicitud de Reserva";
+            var body = "Estimados,\n\n" +
+                       "Quisiera solicitar la reserva de la sala Ituzaingó para las siguientes fechas y horarios:\n\n" +
+                       fechasFormateadas + "\n\n" +
+                       "Nombre del solicitante: " + nombreUsuario + "\n\n" +
+                       "Desde ya, muchas gracias.\n\n" +
+                       "Saludos,\n";
+            var bcc = "sebfernandez@bps.gub.uy";
+
+           
+             var mailto_link = 'mailto:LogisticaYPersonalDeATyR@bps.gub.uy?subject=' + encodeURIComponent(subject) + 
+                  '&body=' + encodeURIComponent(body) + 
+                  '&bcc=' + encodeURIComponent(bcc);
+
+              
+
+            window.location.href = mailto_link;
+        }
+    </script>
+</body>
+</html>
