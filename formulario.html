@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             position: relative;
-            overflow: hidden;
+            overflow-y: scroll; /* Permitir desplazamiento vertical */
         }
 
         #backgroundImage {
@@ -25,7 +25,7 @@
             background-position: center;
             background-repeat: no-repeat;
             opacity: 0; /* Comienza invisible */
-            transition: opacity 2s ease-in; /* Transición de 3 segundos */
+            transition: opacity 2s ease-in; /* Transición de 2 segundos */
             z-index: -1; /* Asegura que la imagen esté detrás del contenido */
         }
 
@@ -33,13 +33,15 @@
             width: 80%;
             max-width: 600px;
             margin: 50px auto; /* Espacio desde la parte superior para que el formulario no esté pegado al borde */
-            background-color: rgba(255, 255, 255, 0.9);
-            border: 2px solid #ddd;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ddd;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
             position: relative; /* Asegura que el contenedor del formulario esté en primer plano */
             z-index: 1;
+            max-height: 80vh; /* Altura máxima para permitir el desplazamiento interno */
+            overflow-y: auto; /* Permitir desplazamiento interno */
         }
 
         label {
@@ -47,6 +49,13 @@
             margin-bottom: 10px;
             text-align: left;
             font-weight: bold;
+            color: rgb(4, 59, 7);
+        }
+
+        h2 {
+            font-weight: bold;
+            color: rgb(4, 59, 7);
+            text-align: center;
         }
 
         input[type="text"], input[type="date"], select {
@@ -65,7 +74,7 @@
 
         button {
             background-color: #4CAF50;
-            color: white;  
+            color: white;
             border: none;
             padding: 12px 24px;
             text-align: center;
@@ -245,6 +254,12 @@
 
             if (nombreUsuario && cantidadDias > 0) {
                 var body = "Nombre: " + nombreUsuario + "\nCantidad de días: " + cantidadDias;
+                for (var i = 1; i <= cantidadDias; i++) {
+                    var fecha = document.getElementById('fecha_' + i).value;
+                    var horaDesde = document.getElementById('horaDesde_' + i).value;
+                    var horaHasta = document.getElementById('horaHasta_' + i).value;
+                    body += "\n\nFecha " + i + ": " + fecha + "\nHora desde: " + horaDesde + "\nHora hasta: " + horaHasta;
+                }
                 var link = "mailto:?subject=Solicitud de Reserva&body=" + encodeURIComponent(body);
                 window.location.href = link;
             } else {
