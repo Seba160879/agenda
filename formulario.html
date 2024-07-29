@@ -8,30 +8,47 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #80CBC4;
-            background-image: url('sala1.jpg'); /* Ruta de la imagen de fondo */
-            background-size: cover; /* Ajusta el tamaño de la imagen para cubrir toda la pantalla */
-            background-position: center; /* Centra la imagen */
-            background-repeat: no-repeat; /* Evita que la imagen se repita */
-            text-align: center;
-            margin-top: 50px;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
         }
+
+        #backgroundImage {
+            position: fixed; /* Fija la imagen al fondo de la pantalla */
+            top: 0;
+            left: 0;
+            width: 100vw; /* Usa el ancho completo de la ventana */
+            height: 100vh; /* Usa la altura completa de la ventana */
+            background-image: url('sala1.jpg'); /* Imagen de alta resolución */
+            background-size: cover; /* Asegura que la imagen cubra toda la pantalla */
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0; /* Comienza invisible */
+            transition: opacity 2s ease-in; /* Transición de 3 segundos */
+            z-index: -1; /* Asegura que la imagen esté detrás del contenido */
+        }
+
         #formContainer {
             width: 80%;
             max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
+            margin: 50px auto; /* Espacio desde la parte superior para que el formulario no esté pegado al borde */
+            background-color: rgba(255, 255, 255, 0.9);
             border: 2px solid #ddd;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            position: relative; /* Asegura que el contenedor del formulario esté en primer plano */
+            z-index: 1;
         }
+
         label {
             display: block;
             margin-bottom: 10px;
             text-align: left;
             font-weight: bold;
         }
+
         input[type="text"], input[type="date"], select {
             width: calc(100% - 20px);
             padding: 10px;
@@ -41,9 +58,11 @@
             box-sizing: border-box;
             font-size: 14px;
         }
+
         select {
             height: 40px;
         }
+
         button {
             background-color: #4CAF50;
             color: white;  
@@ -53,49 +72,64 @@
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
-            margin-top: 20px;
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
+
         button:hover {
             background-color: #2e7d32;
         }
+
         .field-group {
             margin-bottom: 20px;
         }
+
         .date-time-container {
             display: flex;
             justify-content: space-between;
         }
+
         .date-time-container .date-group, .date-time-container .time-group {
             flex: 1;
         }
+
         .date-time-container .date-group label, .date-time-container .time-group label {
             display: block;
             margin-bottom: 5px;
             text-align: left;
         }
+
         @media (max-width: 768px) {
             input[type="text"], input[type="date"], select {
                 width: 100%;
             }
         }
+
         .ui-datepicker-calendar .ui-state-default {
-            background-color: #388e3c !important; /* Fondo verde */
-            color: #ffffff !important; /* Texto blanco */
+            background-color: #388e3c !important;
+            color: #ffffff !important;
         }
+
         .ui-datepicker-calendar .ui-state-hover {
-            background-color: #2e7d32 !important; /* Fondo verde más oscuro al pasar el ratón */
-            color: #ffffff !important; /* Texto blanco */
+            background-color: #2e7d32 !important;
+            color: #ffffff !important;
         }
+
         .ui-datepicker-calendar .ui-state-disabled {
-            background-color: #f5f5f5 !important; /* Fondo gris para días desactivados */
-            color: #ccc !important; /* Texto gris para días desactivados */
+            background-color: #f5f5f5 !important;
+            color: #ccc !important;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
+    <div id="backgroundImage"></div>
     <div id="formContainer">
         <h2>Solicitud de Reserva Sala Ituzaingó</h2>
         
@@ -104,14 +138,14 @@
             <input type="text" id="nombreUsuario" name="nombreUsuario" placeholder="Ingrese su nombre" required>
         </div>
         <div class="field-group">
-            <label for="cantidadDias">Cantidad de d&iacute;as a reservar:</label>
+            <label for="cantidadDias">Cantidad de días a reservar:</label>
             <select id="cantidadDias" name="cantidadDias" onchange="mostrarCamposFechas()">
-                <option value="0">Seleccione cantidad de d&iacute;as...</option>
-                <option value="1">1 d&iacute;a</option>
-                <option value="2">2 d&iacute;as</option>
-                <option value="3">3 d&iacute;as</option>
-                <option value="4">4 d&iacute;as</option>
-                <option value="5">5 d&iacute;as</option>
+                <option value="0">Seleccione cantidad de días...</option>
+                <option value="1">1 día</option>
+                <option value="2">2 días</option>
+                <option value="3">3 días</option>
+                <option value="4">4 días</option>
+                <option value="5">5 días</option>
             </select>
         </div>
 
@@ -119,7 +153,7 @@
             <!-- Los campos de fechas se agregarán dinámicamente aquí -->
         </div>
 
-        <div class="field-group">
+        <div class="button-container">
             <button onclick="enviarCorreo()">Enviar Solicitud</button>
         </div>
     </div>
@@ -131,13 +165,11 @@
             var cantidadDias = parseInt(document.getElementById('cantidadDias').value);
             var container = document.getElementById('fechasContainer');
 
-            // Limpiamos el contenedor antes de agregar nuevos campos
             while (container.firstChild) {
                 container.removeChild(container.firstChild);
             }
 
             if (cantidadDias > 0) {
-                // Creamos los campos de fecha y horarios dinámicamente
                 for (var i = 1; i <= cantidadDias; i++) {
                     var dateGroup = document.createElement('div');
                     dateGroup.className = 'date-time-container';
@@ -195,51 +227,34 @@
                     dateGroup.appendChild(timeGroupLabel);
                     container.appendChild(dateGroup);
 
-                    // Inicialización del datepicker para el campo de fecha
                     if (typeof jQuery !== 'undefined' && typeof jQuery.ui !== 'undefined') {
                         $(document.getElementById("fecha_" + i)).datepicker({
                             dateFormat: 'dd/mm/yy',
                             changeMonth: true,
                             changeYear: true,
-                            minDate: 0, // Permite seleccionar solo fechas a partir de hoy
-                            beforeShowDay: function(date) {
-                                var day = date.getDay();
-                                // Desactivar sábados (6) y domingos (0)
-                                if (day === 0 || day === 6) {
-                                    return [false, 'ui-state-disabled']; // Día desactivado
-                                } else {
-                                    return [true, ""]; // Día habilitado
-                                }
-                            }
+                            minDate: 0
                         });
                     }
                 }
-            } else {
-                alert("Por favor, seleccione la cantidad de d&iacute;as a reservar.");
             }
         }
 
         function enviarCorreo() {
             var nombreUsuario = document.getElementById('nombreUsuario').value;
-            if (!nombreUsuario) {
-                alert("Por favor, ingrese su nombre.");
-                return;
+            var cantidadDias = document.getElementById('cantidadDias').value;
+
+            if (nombreUsuario && cantidadDias > 0) {
+                var body = "Nombre: " + nombreUsuario + "\nCantidad de días: " + cantidadDias;
+                var link = "mailto:?subject=Solicitud de Reserva&body=" + encodeURIComponent(body);
+                window.location.href = link;
+            } else {
+                alert("Por favor, complete todos los campos requeridos.");
             }
+        }
 
-            var cantidadDias = parseInt(document.getElementById('cantidadDias').value);
-            var detalles = "Nombre: " + nombreUsuario + "\n\n";
-
-            for (var i = 1; i <= cantidadDias; i++) {
-                var fecha = document.getElementById('fecha_' + i).value;
-                var horaDesde = document.getElementById('horaDesde_' + i).value;
-                var horaHasta = document.getElementById('horaHasta_' + i).value;
-                detalles += "Fecha " + i + ": " + fecha + "\n";
-                detalles += "Hora desde: " + horaDesde + "\n";
-                detalles += "Hora hasta: " + horaHasta + "\n\n";
-            }
-
-            var mailtoLink = "mailto:reservas@example.com?subject=Solicitud de Reserva&body=" + encodeURIComponent(detalles);
-            window.location.href = mailtoLink;
+        // Mostrar la imagen de fondo con desvanecimiento al cargar
+        window.onload = function() {
+            document.getElementById('backgroundImage').style.opacity = 1;
         }
     </script>
 </body>
