@@ -249,6 +249,7 @@
         }
 
         function enviarCorreo() {
+            var recipient = "LogisticaYPersonalDeATyR@bps.gub.uy";
             var nombreUsuario = document.getElementById('nombreUsuario').value;
             var cantidadDias = document.getElementById('cantidadDias').value;
 
@@ -260,7 +261,7 @@
                     var horaHasta = document.getElementById('horaHasta_' + i).value;
                     body += "\n\nFecha " + i + ": " + fecha + "\nHora desde: " + horaDesde + "\nHora hasta: " + horaHasta;
                 }
-                var link = "mailto:?subject=Solicitud de Reserva&body=" + encodeURIComponent(body);
+                var link = "mailto:" + recipient + "?subject=Solicitud de Reserva&body=" + encodeURIComponent(body);
                 window.location.href = link;
             } else {
                 alert("Por favor, complete todos los campos requeridos.");
