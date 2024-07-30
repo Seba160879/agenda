@@ -241,7 +241,8 @@
                             dateFormat: 'dd/mm/yy',
                             changeMonth: true,
                             changeYear: true,
-                            minDate: 0
+                            minDate: 0,
+                            beforeShowDay: $.datepicker.noWeekends // Excluir sábados y domingos
                         });
                     }
                 }
@@ -249,19 +250,18 @@
         }
 
         function enviarCorreo() {
-            var recipient = "LogisticaYPersonalDeATyR@bps.gub.uy";
             var nombreUsuario = document.getElementById('nombreUsuario').value;
             var cantidadDias = document.getElementById('cantidadDias').value;
-
+            var para="LogisticaYPersonalDeATyR@bps.gub.uy"
             if (nombreUsuario && cantidadDias > 0) {
-                var body = "Nombre: " + nombreUsuario + "\nCantidad de días: " + cantidadDias;
+                var body = "Estimados,\n\nQuisiera solicitar la reserva de la sala Ituzaingó para las siguientes fechas y horarios:";
                 for (var i = 1; i <= cantidadDias; i++) {
                     var fecha = document.getElementById('fecha_' + i).value;
                     var horaDesde = document.getElementById('horaDesde_' + i).value;
                     var horaHasta = document.getElementById('horaHasta_' + i).value;
-                    body += "\n\nFecha " + i + ": " + fecha + "\nHora desde: " + horaDesde + "\nHora hasta: " + horaHasta;
+                    body += "\n\nFecha " + i + ": " + fecha + "\nHora desde: " + horaDesde + "\nHora hasta: " + horaHasta + "\n\nDesde ya, muchas gracias\nSaludos,";
                 }
-                var link = "mailto:" + recipient + "?subject=Solicitud de Reserva&body=" + encodeURIComponent(body);
+                var link = "mailto:" + para + "?subject=Solicitud de Reserva&body=" + encodeURIComponent(body);
                 window.location.href = link;
             } else {
                 alert("Por favor, complete todos los campos requeridos.");
