@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Datos de Otra Página</title>
+    <script>
+        function cargarYMostrarDatos() {
+            const url = '//seba160879.github.io/agenda/'; // Ruta del archivo HTML local
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200 || xhr.status === 0) { // 0 es para el protocolo file://
+                        const textoHTML = xhr.responseText;
+
+                        // Crear un elemento temporal para contener el HTML
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = textoHTML;
+
+                        // Obtener la tabla del contenido cargado
+                        const tabla = tempDiv.getElementById('tablaDatos');
+                        if (!tabla) {
+                            console.error("No se encontró la tabla en el documento cargado.");
+                            return;
+                        }
+
+                        // Mostrar datos en la página actual
+                        mostrarDatos(tabla);
+                    } else {
+                        console.error('Error al cargar el documento:', xhr.statusText);
+                    }
+                }
+            };
+
+            xhr.send();
+        }
+
+        function mostrarDatos(tabla) {
+            const filas = tabla.getElementsByTagName('tr');
+            const resultDiv = document.getElementById('resultados');
+
+            // Limpiar resultados anteriores
+            resultDiv.innerHTML = '';
+
+            for (let i = 0; i < filas.length; i++) {
+                const fila = filas[i];
+                const celdas = fila.getElementsByTagName('td');
+                
+                if (celdas.length > 0) { // Solo procesar filas con datos
+                    let datos = [];
+                    for (let j = 0; j < celdas.length; j++) {
+                        datos.push(celdas[j].textContent.trim());
+                    }
+                    resultDiv.innerHTML += `<p>Fila ${i}: ${datos.join(', ')}</p>`;
+                }
+            }
+        }
+
+        // Ejecutar la función cargarYMostrarDatos cuando la página ha cargado completamente
+        window.onload = cargarYMostrarDatos;
+    </script>
+</head>
+<body>
+    <h1>Datos Extraídos de Otro Archivo</h1>
+    <div id="resultados"></div>
+</body>
+</html>
