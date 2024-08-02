@@ -55,6 +55,7 @@ button:hover { background-color: #2e7d32; }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script>
+var disabledDates = ["28/02/2024","29/02/2024","01/03/2024","04/03/2024","05/03/2024","07/03/2024","08/03/2024","11/03/2024","02/04/2024","03/04/2024","15/04/2024","09/05/2024","05/06/2024","12/06/2024","26/06/2024","16/07/2024","RESERVADA","22/07/2024","23/07/2024","24/07/2024","26/07/2024","30/07/2024","01/08/2024","02/08/2024","05/08/2024","13/08/2024"];
 function mostrarCamposFechas() {
     var cantidadDias = parseInt(document.getElementById('cantidadDias').value);
     var container = document.getElementById('fechasContainer');
@@ -67,82 +68,106 @@ function mostrarCamposFechas() {
             dateGroup.className = 'date-time-container';
             var dateGroupLabel = document.createElement('div');
             dateGroupLabel.className = 'date-group';
-            var fechaLabel = document.createElement('label');
-            fechaLabel.textContent = 'Fecha ' + i + ':';
-            dateGroupLabel.appendChild(fechaLabel);
-            var fechaInput = document.createElement('input');
-            fechaInput.setAttribute('type', 'text');
-     
-            fechaInput.setAttribute('id', 'fecha_' + i);
-            fechaInput.setAttribute('name', 'fecha_' + i);
-            fechaInput.setAttribute('placeholder', 'Seleccione la fecha');
-            dateGroupLabel.appendChild(fechaInput);
+            var label = document.createElement('label');
+            label.htmlFor = 'fecha' + i;
+            label.appendChild(document.createTextNode('Fecha ' + i + ':'));
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.id = 'fecha' + i;
+            input.name = 'fecha' + i;
+            input.className = 'datepicker';
+            input.placeholder = 'Seleccionar fecha';
+            input.required = true;
+            dateGroupLabel.appendChild(label);
+            dateGroupLabel.appendChild(input);
+            var timeGroup = document.createElement('div');
+            timeGroup.className = 'time-group';
+            var timeLabel = document.createElement('label');
+            timeLabel.htmlFor = 'horaInicio' + i;
+            timeLabel.appendChild(document.createTextNode('Hora de Inicio:'));
+            var timeSelect = document.createElement('select');
+            timeSelect.id = 'horaInicio' + i;
+            timeSelect.name = 'horaInicio' + i;
+            timeSelect.innerHTML = getTimeOptions();
+            timeGroup.appendChild(timeLabel);
+            timeGroup.appendChild(timeSelect);
+            var timeEndLabel = document.createElement('label');
+            timeEndLabel.htmlFor = 'horaFin' + i;
+            timeEndLabel.appendChild(document.createTextNode('Hora de Fin:'));
+            var timeEndSelect = document.createElement('select');
+            timeEndSelect.id = 'horaFin' + i;
+            timeEndSelect.name = 'horaFin' + i;
+            timeEndSelect.innerHTML = getTimeOptions();
+            timeGroup.appendChild(timeEndLabel);
+            timeGroup.appendChild(timeEndSelect);
             dateGroup.appendChild(dateGroupLabel);
-            var timeGroupLabel = document.createElement('div');
-            timeGroupLabel.className = 'time-group';
-            var horaDesdeLabel = document.createElement('label');
-            horaDesdeLabel.textContent = 'Hora desde:';
-            timeGroupLabel.appendChild(horaDesdeLabel);
-            var horaDesdeSelect = document.createElement('select');
-            horaDesdeSelect.setAttribute('id', 'horaDesde_' + i);
-            horaDesdeSelect.setAttribute('name', 'horaDesde_' + i);
-            horaDesdeSelect.setAttribute('required', 'true');
-            var horasOptions = ['Seleccionar hora...', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
-            for (var j = 0; j < horasOptions.length; j++) {
-                var optionDesde = document.createElement('option');
-                optionDesde.setAttribute('value', horasOptions[j]);
-                optionDesde.textContent = horasOptions[j];
-                horaDesdeSelect.appendChild(optionDesde);
-            }
-            timeGroupLabel.appendChild(horaDesdeSelect);
-            var horaHastaLabel = document.createElement('label');
-            horaHastaLabel.textContent = 'Hora hasta:';
-            timeGroupLabel.appendChild(horaHastaLabel);
-            var horaHastaSelect = document.createElement('select');
-            horaHastaSelect.setAttribute('id', 'horaHasta_' + i);
-            horaHastaSelect.setAttribute('name', 'horaHasta_' + i);
-            horaHastaSelect.setAttribute('required', 'true');
-            for (var k = 0; k < horasOptions.length; k++) {
-                var optionHasta = document.createElement('option');
-                optionHasta.setAttribute('value', horasOptions[k]);
-                optionHasta.textContent = horasOptions[k];
-                horaHastaSelect.appendChild(optionHasta);
-            }
-            timeGroupLabel.appendChild(horaHastaSelect);
-            dateGroup.appendChild(timeGroupLabel);
+            dateGroup.appendChild(timeGroup);
             container.appendChild(dateGroup);
-            if (typeof jQuery !== 'undefined' && typeof jQuery.ui !== 'undefined') {
-                $(document.getElementById('fecha_' + i)).datepicker({
-                    dateFormat: 'dd/mm/yy',
-                    changeMonth: true,
-                    changeYear: true,
-                    minDate: 0,
-                    beforeShowDay: $.datepicker.noWeekends
-                });
-            }
         }
+        $('.datepicker').datepicker({
+            dateFormat: 'dd/mm/yy',
+            minDate: 0,
+            beforeShowDay: function(date) {
+                var string = jQuery.datepicker.formatDate('dd/mm/yy', date);
+                var day = date.getDay();
+                if (day === 0 || day === 6 || disabledDates.indexOf(string) !== -1) {
+                    return [false];
+                } else {
+                    return [true];
+                }
+            }
+        });
     }
 }
-function enviarCorreo() {
-    var nombreUsuario = document.getElementById('nombreUsuario').value;
-    var cantidadDias = document.getElementById('cantidadDias').value;
-    var para='LogisticaYPersonalDeATyR@bps.gub.uy';
-    if (nombreUsuario && cantidadDias > 0) {
-        var body = 'Estimados,\n\nQuisiera solicitar la reserva de la sala Ituzaingó para las siguientes fechas y horarios:';
-        for (var i = 1; i <= cantidadDias; i++) {
-            var fecha = document.getElementById('fecha_' + i).value;
-            var horaDesde = document.getElementById('horaDesde_' + i).value;
-            var horaHasta = document.getElementById('horaHasta_' + i).value;
-            body += '\n\nFecha ' + i + ': ' + fecha + '\nHora desde: ' + horaDesde + '\nHora hasta: '  + 'hora hasta:'+ horaHasta + '\nNombre del solicitante: '+ nombreUsuario + '\n\nDesde ya, muchas gracias\nSaludos,';
-        }
-        var link = 'mailto:' + para + '?subject=Solicitud de Reserva&body=' + encodeURIComponent(body);
-        window.location.href = link;
-    } else {
-        alert('Por favor, complete todos los campos requeridos.');
-    }
+function getTimeOptions() {
+    var options ='<option value="09:00">Seleccione cantidad de días...</option>';
+    options += '<option value="09:00">09:00</option>';
+    options += '<option value="09:30">09:30</option>';
+    options += '<option value="10:00">10:00</option>';
+    options += '<option value="10:30">10:30</option>';
+    options += '<option value="11:00">11:00</option>';
+    options += '<option value="11:30">11:30</option>';
+    options += '<option value="12:00">12:00</option>';
+    options += '<option value="12:30">12:30</option>';
+    options += '<option value="13:00">13:00</option>';
+    options += '<option value="13:30">13:30</option>';
+    options += '<option value="14:00">14:00</option>';
+    options += '<option value="14:30">14:30</option>';
+    options += '<option value="15:00">15:00</option>';
+    options += '<option value="15:30">15:30</option>';
+    options += '<option value="16:00">16:00</option>';
+    options += '<option value="16:30">16:30</option>';
+    options += '<option value="17:00">17:00</option>';
+    return options;
+}
+ function enviarCorreo() {
+   var nombreUsuario = document.getElementById('nombreUsuario').value;
+   var cantidadDias = document.getElementById('cantidadDias').value;
+   var para = 'LogisticaYPersonalDeATyR@bps.gub.uy';
+   var cc = 'sebfernandez@bps.gub.uy ';
+   var asunto = 'Solicitud de Reserva'
+  if (nombreUsuario && cantidadDias > 0) {
+     var body = 'Estimados,\n\nQuisiera solicitar la reserva de la sala Ituzaingó para las siguientes fechas y horarios:';
+    for (var i = 1; i <= cantidadDias; i++) {
+       var fecha = document.getElementById('fecha' + i).value;
+        var horaDesde = document.getElementById('horaInicio' + i).value;
+       var horaHasta = document.getElementById('horaFin' + i).value;
+       body += '\n\nFecha ' + i + ': ' + fecha +
+               '\nHora desde: ' + horaDesde +
+              '\nHora hasta: ' + horaHasta }
+       body +=  '\nNombre del solicitante: ' + nombreUsuario 
+       body += '\n\nDesde ya, muchas gracias\nSaludos,'; 
+ var link = 'mailto:' + para +
+            '?cc=' + cc +
+           '&subject=' + encodeURIComponent(asunto) +
+           '&body=' + encodeURIComponent(body);
+ window.location.href = link;
+ } else {
+    alert('Por favor, complete todos los campos requeridos.');
+ }
 }
 window.onload = function() {
-    document.getElementById('backgroundImage').style.opacity = 1;
+   document.getElementById('backgroundImage').style.opacity = 1;
 }
 </script>
 </body>
